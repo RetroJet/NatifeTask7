@@ -13,14 +13,14 @@ struct FilmsListViewStateFactoryInput {
 }
 
 protocol FilmsListViewStateFactoryProtocol {
-    func make(_ state: FilmsListViewStateFactoryInput) -> FilmsListViewState
+    func make(_ input: FilmsListViewStateFactoryInput) -> FilmsListViewState
 }
 
-final class FilmsListViewStateFactory: FilmsListViewStateFactoryProtocol {
-    func make(_ state: FilmsListViewStateFactoryInput) -> FilmsListViewState {
-        let genreMap = Dictionary(uniqueKeysWithValues: state.genres.map { ($0.id, $0.name) })
+struct FilmsListViewStateFactory: FilmsListViewStateFactoryProtocol {
+    func make(_ input: FilmsListViewStateFactoryInput) -> FilmsListViewState {
+        let genreMap = Dictionary(uniqueKeysWithValues: input.genres.map { ($0.id, $0.name) })
         
-        let items = state.films.map { film in
+        let items = input.films.map { film in
             let poster = film.poster.flatMap { URL(string: Image.posterBaseURL + $0) }
             let rating = String(format: "%.1f", film.rating)
             let title = film.title + ", " + String(film.date.prefix(4))

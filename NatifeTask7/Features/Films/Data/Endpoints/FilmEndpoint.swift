@@ -1,15 +1,16 @@
 //
-//  FilmsEndpoint.swift
+//  FilmEndpoint.swift
 //  NatifeTask7
 //
-//  Created by Nazar on 29.04.2026.
+//  Created by Nazar on 05.05.2026.
 //
 
 import Alamofire
 import Foundation
 
-enum FilmsEndpoint: Endpoint {
-    case popular(page: Int)
+enum FilmEndpoint: Endpoint {
+    case detail(id: Int)
+    case trailer(id: Int)
     
     var baseURL: URL {
         guard let url = URL(string: API.baseURL) else { fatalError(CommonTextError.invalidURL) }
@@ -18,11 +19,12 @@ enum FilmsEndpoint: Endpoint {
     
     var path: String {
         switch self {
-        case .popular: return API.popularFilms
+        case .detail(let id): return "/movie/\(id)"
+        case .trailer(let id): return "/movie/\(id)/videos"
         }
     }
     
-    var method: HTTPMethod { .get }
+    var method: Alamofire.HTTPMethod { .get }
     
     var headers: [String: String] {
         [
@@ -32,19 +34,12 @@ enum FilmsEndpoint: Endpoint {
     }
     
     var queryItems: [URLQueryItem] {
-        switch self {
-        case .popular(let page):
-            return [
-                URLQueryItem(name: "language", value: "en-US"),
-                URLQueryItem(name: "page", value: "\(page)")
-            ]
-        }
+        return [URLQueryItem(name: "language", value: "en-US")]
     }
 }
 
-private extension FilmsEndpoint {
+private extension FilmEndpoint {
     enum API {
         static let baseURL = "https://api.themoviedb.org/3"
-        static let popularFilms = "/movie/popular"
     }
 }

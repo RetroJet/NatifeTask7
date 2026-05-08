@@ -19,6 +19,7 @@ final class FilmsListAssembly {
             router: router
         )
         
+        router.viewController = viewController
         viewController.inject(presenter: presenter)
         
         return viewController

@@ -1,6 +1,17 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "common_invalid_url_error" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid base URL"
+          }
+        }
+      }
+    },
     "common_text_error" : {
       "comment" : "Comment",
       "localizations" : {

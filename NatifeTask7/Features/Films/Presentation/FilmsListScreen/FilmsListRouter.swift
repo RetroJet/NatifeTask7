@@ -8,7 +8,7 @@
 import UIKit
 
 protocol FilmsListRouterProtocol: AnyObject {
-    func openFilmDetail(_ filmId: Int)
+    func openFilmDetail(_ filmId: Int, title: String)
 }
 
 final class FilmsListRouter {
@@ -28,7 +28,8 @@ final class FilmsListRouter {
 // MARK: - FilmsListRouterProtocol
 
 extension FilmsListRouter: FilmsListRouterProtocol {
-    func openFilmDetail(_ filmId: Int) {
-        //let filmDetailViewController = 
+    func openFilmDetail(_ filmId: Int, title: String) {
+        let filmDetailViewController = FilmDetailAssembly.build(container: container, filmId: filmId, title: title)
+        self.viewController?.navigationController?.pushViewController(filmDetailViewController, animated: true)
     }
 }
