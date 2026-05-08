@@ -121,6 +121,7 @@ extension FilmsListViewController {
 
 private extension FilmsListViewController {
     func setupView() {
+        view.backgroundColor = .white
         view.addSubviews(
             collectionView,
             separatorView,
@@ -128,7 +129,6 @@ private extension FilmsListViewController {
             activityIndicator,
             emptyLabel
         )
-        view.backgroundColor = .white
     }
     
     func setupNavigationBar() {
@@ -272,7 +272,8 @@ extension FilmsListViewController: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        presenter.didSelectFilm(item.id)
     }
 }
 

@@ -9,8 +9,8 @@ import Foundation
 
 enum SortOption: String, CaseIterable {
     case all = "All"
-    case ratingDesc = "Rating: Hight to Low"
-    case ratingAsc = "Rating: Low to Hight"
+    case ratingDesc = "Rating: High to Low"
+    case ratingAsc = "Rating: Low to High"
     case yearDesc = "Newest first"
     case yearAsc = "Oldest first"
 }
@@ -22,7 +22,7 @@ protocol FilmsListPresenterProtocol: AnyObject {
     func didPullToRefresh() async
     func didChangeSearchText(_ text: String)
     func didSelectSort(_ option: SortOption)
-    //func didSelectFilm(_ film: )
+    func didSelectFilm(_ id: Int)
 }
 
 final class FilmsListPresenter {
@@ -151,7 +151,7 @@ private extension FilmsListPresenter {
     
     enum Constants {
         static let currentQuery = ""
-        static let minSearchLenght = 2
+        static let minSearchLength = 2
         static let nanoseconds: UInt64 = 500_000_000
     }
     
@@ -183,5 +183,10 @@ extension FilmsListPresenter: FilmsListPresenterProtocol {
     func didSelectSort(_ option: SortOption) {
         currentSort = option
         Task { await render() }
+    }
+    
+    func didSelectFilm(_ id: Int) {
+        guard let film = allFilms.first(where: { $0.id == id }) else { return }
+        router.openFilmDetail(id, title: film.title)
     }
 }

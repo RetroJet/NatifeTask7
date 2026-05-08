@@ -16,6 +16,10 @@ enum FilmsListTextError {
 }
 
 enum CommonText {
-    static let error = String(localized: "common_text_error")
     static let ok = String(localized: "common_text_ok")
+}
+
+enum CommonTextError {
+    static let error = String(localized: "common_text_error")
+    static let invalidURL = "common_invalid_url_error"
 }

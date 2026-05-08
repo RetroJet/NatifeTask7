@@ -76,6 +76,13 @@ final class FilmsListCell: UICollectionViewCell {
         layer.shadowPath = UIBezierPath(roundedRect: shadowRect, cornerRadius: 5).cgPath
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        layer.shadowOpacity = 0
+        imageView.kf.cancelDownloadTask()
+        imageView.image = nil
+    }
+    
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -84,12 +91,13 @@ final class FilmsListCell: UICollectionViewCell {
 
 // MARK: - Internal Methods
 
- extension FilmsListCell {
-     func render(with viewState: FilmsListItemViewState) {
-         imageView.kf.setImage(with: viewState.poster)
-         titleLabel.text = viewState.title
-         genresLabel.text = viewState.genre
-         ratingLabel.text = viewState.rating
+extension FilmsListCell {
+    func render(with viewState: FilmsListItemViewState) {
+        layer.shadowOpacity = 0.4
+        imageView.kf.setImage(with: viewState.poster)
+        titleLabel.text = viewState.title
+        genresLabel.text = viewState.genre
+        ratingLabel.text = viewState.rating
     }
 }
 
@@ -116,7 +124,7 @@ private extension FilmsListCell {
     
     func setupShadow() {
         layer.shadowColor = UIColor.black.cgColor
-        layer.shadowOpacity = 0.4
+        layer.shadowOpacity = 0
         layer.shadowOffset = CGSize(width: 0, height: 4)
         layer.shadowRadius = 6
     }
