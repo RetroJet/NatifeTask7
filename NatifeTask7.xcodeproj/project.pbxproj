@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		78381C0A2F9B5FBE0084F150 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 78381C092F9B5FBE0084F150 /* Alamofire */; };
+		7875EEBB2F9649C7001C22D2 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 7875EEBA2F9649C7001C22D2 /* SnapKit */; };
+		78D7FA3F2FA389F800AC289B /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 78D7FA3E2FA389F800AC289B /* Kingfisher */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		787B883F2F94281900F06825 /* NatifeTask7.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NatifeTask7.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +42,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78D7FA3F2FA389F800AC289B /* Kingfisher in Frameworks */,
+				7875EEBB2F9649C7001C22D2 /* SnapKit in Frameworks */,
+				78381C0A2F9B5FBE0084F150 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,12 +81,16 @@
 			buildRules = (
 			);
 			dependencies = (
+				78F7AAC72FADF21B004F1104 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				787B88412F94281900F06825 /* NatifeTask7 */,
 			);
 			name = NatifeTask7;
 			packageProductDependencies = (
+				7875EEBA2F9649C7001C22D2 /* SnapKit */,
+				78381C092F9B5FBE0084F150 /* Alamofire */,
+				78D7FA3E2FA389F800AC289B /* Kingfisher */,
 			);
 			productName = NatifeTask7;
 			productReference = 787B883F2F94281900F06825 /* NatifeTask7.app */;
@@ -107,6 +120,12 @@
 			);
 			mainGroup = 787B88362F94281900F06825;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				7875EEB92F9649C7001C22D2 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				78381C082F9B5FBE0084F150 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				78D7FA3D2FA389F800AC289B /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				78F7AAC52FADF13F004F1104 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 787B88402F94281900F06825 /* Products */;
 			projectDirPath = "";
@@ -137,6 +156,13 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		78F7AAC72FADF21B004F1104 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 78F7AAC62FADF21B004F1104 /* SwiftLintBuildToolPlugin */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
 		787B88532F94281B00F06825 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -152,6 +178,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -183,6 +210,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -260,6 +288,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -317,6 +346,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -343,6 +373,64 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		78381C082F9B5FBE0084F150 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.11.2;
+			};
+		};
+		7875EEB92F9649C7001C22D2 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+		78D7FA3D2FA389F800AC289B /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.8.1;
+			};
+		};
+		78F7AAC52FADF13F004F1104 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.63.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		78381C092F9B5FBE0084F150 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 78381C082F9B5FBE0084F150 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		7875EEBA2F9649C7001C22D2 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7875EEB92F9649C7001C22D2 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		78D7FA3E2FA389F800AC289B /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 78D7FA3D2FA389F800AC289B /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+		78F7AAC62FADF21B004F1104 /* SwiftLintBuildToolPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 78F7AAC52FADF13F004F1104 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
+			productName = "plugin:SwiftLintBuildToolPlugin";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 787B88372F94281900F06825 /* Project object */;
 }
