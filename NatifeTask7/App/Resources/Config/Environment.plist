@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>TMDB_API_KEY</key>
+	<string>eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1OTVjODMwNjQ0MGU3NzQwOTAwMDM0MDA2Y2I3OGZiNSIsIm5iZiI6MTc3NzAyMDc4OS41OTUsInN1YiI6IjY5ZWIyZjc1ZDM1OGYwOGM0NTI4Y2IyYyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.R6YUWQp8nPw6pmETEozRtqj91aIFFbNaO7ke4aF9n7c</string>
+</dict>
+</plist>

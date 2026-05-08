@@ -1,0 +1,50 @@
+//
+//  FilmsListViewStateFactory.swift
+//  NatifeTask7
+//
+//  Created by Nazar on 30.04.2026.
+//
+
+import Foundation
+
+struct FilmsListViewStateFactoryInput {
+    let films: [FilmsListInfo]
+    let genres: [GenresInfo]
+}
+
+protocol FilmsListViewStateFactoryProtocol {
+    func make(_ state: FilmsListViewStateFactoryInput) -> FilmsListViewState
+}
+
+final class FilmsListViewStateFactory: FilmsListViewStateFactoryProtocol {
+    func make(_ state: FilmsListViewStateFactoryInput) -> FilmsListViewState {
+        let genreMap = Dictionary(uniqueKeysWithValues: state.genres.map { ($0.id, $0.name) })
+        
+        let items = state.films.map { film in
+            let poster = film.poster.flatMap { URL(string: Image.posterBaseURL + $0) }
+            let rating = String(format: "%.1f", film.rating)
+            let title = film.title + ", " + String(film.date.prefix(4))
+            let genre = film.genreIds
+                .compactMap { genreMap[$0] }
+                .prefix(3)
+                .joined(separator: ", ")
+            
+            return FilmsListItemViewState(
+                id: film.id,
+                poster: poster,
+                title: title,
+                genre: genre,
+                rating: rating,
+                date: film.date
+            )
+        }
+        
+        return FilmsListViewState(items: items)
+    }
+}
+
+private extension FilmsListViewStateFactory {
+    enum Image {
+        static let posterBaseURL = "https://image.tmdb.org/t/p/w500"
+    }
+}
