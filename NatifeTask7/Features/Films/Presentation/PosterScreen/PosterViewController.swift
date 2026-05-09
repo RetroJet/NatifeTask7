@@ -11,8 +11,6 @@ import UIKit
 
 protocol PosterViewControllerProtocol: AnyObject {
     func render(_ state: PosterViewState)
-    func dismissScreen()
-    
 }
 
 final class PosterViewController: UIViewController {
@@ -97,9 +95,9 @@ private extension PosterViewController {
         }
         
         imageView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            make.width.equalToSuperview()
-            make.height.equalToSuperview()
+            make.edges.equalTo(scrollView.contentLayoutGuide)
+            make.width.equalTo(scrollView.frameLayoutGuide)
+            make.height.equalTo(scrollView.frameLayoutGuide)
         }
     }
     
@@ -116,7 +114,7 @@ private extension PosterViewController {
     
     @objc
     func handleClose() {
-        presenter.didSwipeDown()
+        presenter.didTapClose()
     }
     
     enum Zoom {
@@ -134,10 +132,6 @@ private extension PosterViewController {
 extension PosterViewController: PosterViewControllerProtocol {
     func render(_ state: PosterViewState) {
         imageView.kf.setImage(with: state.poster)
-    }
-    
-    func dismissScreen() {
-        dismiss(animated: true)
     }
 }
 

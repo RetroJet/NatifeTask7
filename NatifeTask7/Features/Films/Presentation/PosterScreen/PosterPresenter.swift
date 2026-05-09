@@ -10,6 +10,7 @@ import Foundation
 protocol PosterPresenterProtocol: AnyObject {
     func viewDidLoad()
     func didSwipeDown()
+    func didTapClose()
 }
 
 final class PosterPresenter {
@@ -45,6 +46,10 @@ extension PosterPresenter: PosterPresenterProtocol {
     }
     
     func didSwipeDown() {
+        router.dismiss()
+    }
+    
+    func didTapClose() {
         router.dismiss()
     }
 }

@@ -8,11 +8,15 @@
 import Foundation
 
 enum SortOption: String, CaseIterable {
-    case all = "All"
-    case ratingDesc = "Rating: High to Low"
-    case ratingAsc = "Rating: Low to High"
-    case yearDesc = "Newest first"
-    case yearAsc = "Oldest first"
+    case all = "sort_all"
+    case ratingDesc = "sort_rating_desc"
+    case ratingAsc = "sort_rating_asc"
+    case yearDesc = "sort_year_desc"
+    case yearAsc = "sort_year_asc"
+    
+    var title: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
 }
 
 protocol FilmsListPresenterProtocol: AnyObject {
@@ -71,6 +75,7 @@ private extension FilmsListPresenter {
     
     func loadInitial(showLoader: Bool = true) async {
         guard isConnected else {
+            await MainActor.run { viewController?.showError(CommonTextError.internetError) }
             await render()
             return
         }
