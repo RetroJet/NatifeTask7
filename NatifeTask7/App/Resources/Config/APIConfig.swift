@@ -8,6 +8,8 @@
 import Foundation
 
 enum APIConfig {
+    static let baseURL = "https://api.themoviedb.org/3"
+    
     static var tmdbAPIKey: String {
         guard let path = Bundle.main.path(forResource: "Environment", ofType: "plist"),
               let dict = NSDictionary(contentsOfFile: path),

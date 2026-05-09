@@ -12,11 +12,6 @@ enum FilmEndpoint: Endpoint {
     case detail(id: Int)
     case trailer(id: Int)
     
-    var baseURL: URL {
-        guard let url = URL(string: API.baseURL) else { fatalError(CommonTextError.invalidURL) }
-        return url
-    }
-    
     var path: String {
         switch self {
         case .detail(let id): return "/movie/\(id)"
@@ -26,20 +21,7 @@ enum FilmEndpoint: Endpoint {
     
     var method: Alamofire.HTTPMethod { .get }
     
-    var headers: [String: String] {
-        [
-            "Authorization": "Bearer \(APIConfig.tmdbAPIKey)",
-            "accept": "application/json"
-        ]
-    }
-    
     var queryItems: [URLQueryItem] {
         return [URLQueryItem(name: "language", value: "en-US")]
-    }
-}
-
-private extension FilmEndpoint {
-    enum API {
-        static let baseURL = "https://api.themoviedb.org/3"
     }
 }

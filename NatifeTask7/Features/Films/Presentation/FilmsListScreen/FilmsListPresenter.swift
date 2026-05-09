@@ -111,7 +111,7 @@ private extension FilmsListPresenter {
     
     func render(animated: Bool = true) async {
         let trimmed = currentQuery.trimmingCharacters(in: .whitespacesAndNewlines)
-        let films = trimmed.count >= Constants.minSearchLenght
+        let films = trimmed.count >= Constants.minSearchLength
         ? allFilms.filter { $0.title.range(of: trimmed, options: .caseInsensitive) != nil }
         : allFilms
         let viewState = makeState(films: sorted(films), genres: genres)
@@ -130,7 +130,7 @@ private extension FilmsListPresenter {
     func search(_ query: String) async {
         currentQuery = query
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard trimmed.count >= Constants.minSearchLenght else {
+        guard trimmed.count >= Constants.minSearchLength else {
             await render()
             return
         }
