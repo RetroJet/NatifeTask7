@@ -18,19 +18,13 @@ final class FilmDetailRouter {
 
 extension FilmDetailRouter: FilmDetailRouterProtocol {
     func openTrailer(_ key: String) {
-        guard let url = URL(string: "\(YouTube.baseURL)\(key)") else { return }
-        UIApplication.shared.open(url)
+        let trailerViewController = TrailerViewController(key: key)
+        viewController?.present(trailerViewController, animated: true)
     }
     
     func openPoster(_ poster: URL?) {
         let posterViewController = PosterAssembly.build(poster: poster)
-        posterViewController.modalPresentationStyle = .fullScreen
+        posterViewController.modalPresentationStyle = .overFullScreen
         self.viewController?.present(posterViewController, animated: true)
     }
-}
-
-private extension FilmDetailRouter {
-    enum YouTube {
-            static let baseURL = "https://www.youtube.com/watch?v="
-        }
 }
