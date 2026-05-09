@@ -23,7 +23,7 @@ final class FilmsListCell: UICollectionViewCell {
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 25)
+        label.font = .systemFont(ofSize: 25, weight: .bold)
         label.textColor = .white
         label.numberOfLines = 2
         return label
@@ -37,7 +37,7 @@ final class FilmsListCell: UICollectionViewCell {
     
     private lazy var genresLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 20)
+        label.font = .systemFont(ofSize: 18, weight: .bold)
         label.textColor = .white
         label.numberOfLines = 1
         return label
@@ -45,7 +45,7 @@ final class FilmsListCell: UICollectionViewCell {
     
     private lazy var ratingLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 20)
+        label.font = .systemFont(ofSize: 20, weight: .bold)
         label.textColor = .yellow
         return label
     }()
@@ -120,6 +120,10 @@ private extension FilmsListCell {
             spacerView,
             ratingLabel
         )
+        
+        titleLabel.addShadow()
+        genresLabel.addShadow()
+        ratingLabel.addShadow()
     }
     
     func setupShadow() {
@@ -145,5 +149,14 @@ private extension FilmsListCell {
             make.leading.equalTo(10)
             make.trailing.equalTo(-10)
         }
+    }
+}
+
+private extension UILabel {
+    func addShadow() {
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOpacity = 1
+        layer.shadowOffset = CGSize(width: 0, height: 1)
+        layer.shadowRadius = 3
     }
 }

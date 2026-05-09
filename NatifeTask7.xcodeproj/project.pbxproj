@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		78381C0A2F9B5FBE0084F150 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 78381C092F9B5FBE0084F150 /* Alamofire */; };
 		7875EEBB2F9649C7001C22D2 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 7875EEBA2F9649C7001C22D2 /* SnapKit */; };
+		78C0C8092FAF77BC007C9331 /* YouTubeiOSPlayerHelper in Frameworks */ = {isa = PBXBuildFile; productRef = 78C0C8082FAF77BC007C9331 /* YouTubeiOSPlayerHelper */; };
 		78D7FA3F2FA389F800AC289B /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 78D7FA3E2FA389F800AC289B /* Kingfisher */; };
 /* End PBXBuildFile section */
 
@@ -45,6 +46,7 @@
 				78D7FA3F2FA389F800AC289B /* Kingfisher in Frameworks */,
 				7875EEBB2F9649C7001C22D2 /* SnapKit in Frameworks */,
 				78381C0A2F9B5FBE0084F150 /* Alamofire in Frameworks */,
+				78C0C8092FAF77BC007C9331 /* YouTubeiOSPlayerHelper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,6 +93,7 @@
 				7875EEBA2F9649C7001C22D2 /* SnapKit */,
 				78381C092F9B5FBE0084F150 /* Alamofire */,
 				78D7FA3E2FA389F800AC289B /* Kingfisher */,
+				78C0C8082FAF77BC007C9331 /* YouTubeiOSPlayerHelper */,
 			);
 			productName = NatifeTask7;
 			productReference = 787B883F2F94281900F06825 /* NatifeTask7.app */;
@@ -126,6 +129,7 @@
 				78381C082F9B5FBE0084F150 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				78D7FA3D2FA389F800AC289B /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				78F7AAC52FADF13F004F1104 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
+				78C0C8072FAF77BC007C9331 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 787B88402F94281900F06825 /* Products */;
@@ -177,8 +181,8 @@
 				INFOPLIST_FILE = NatifeTask7/App/Resources/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -209,8 +213,8 @@
 				INFOPLIST_FILE = NatifeTask7/App/Resources/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -392,6 +396,14 @@
 				minimumVersion = 5.7.1;
 			};
 		};
+		78C0C8072FAF77BC007C9331 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/youtube/youtube-ios-player-helper";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.4;
+			};
+		};
 		78D7FA3D2FA389F800AC289B /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher";
@@ -420,6 +432,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7875EEB92F9649C7001C22D2 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
+		};
+		78C0C8082FAF77BC007C9331 /* YouTubeiOSPlayerHelper */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 78C0C8072FAF77BC007C9331 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */;
+			productName = YouTubeiOSPlayerHelper;
 		};
 		78D7FA3E2FA389F800AC289B /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
