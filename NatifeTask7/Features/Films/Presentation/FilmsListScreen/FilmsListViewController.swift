@@ -203,7 +203,7 @@ private extension FilmsListViewController {
     func makeSortMenu() -> UIMenu {
         let actions = SortOption.allCases.map { option in
             UIAction(
-                title: option.rawValue,
+                title: option.title,
                 state: presenter.currentSort == option ? .on : .off
             ) { [weak self] _ in
                 self?.presenter.didSelectSort(option)
@@ -223,7 +223,7 @@ private extension FilmsListViewController {
     
     enum UIStrings {
         static let iconImageDecrease = "line.3.horizontal.decrease"
-        static let searchBarTitle = "Search"
+        static let searchBarTitle = String(localized: "search_bar_title")
         static let emptyLabelTitle = "No movies found"
     }
     

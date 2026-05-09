@@ -77,6 +77,7 @@ final class FilmDetailViewController: UIViewController {
         let button = UIButton()
         button.layer.cornerRadius = 16
         button.clipsToBounds = true
+        button.isHidden = true
         button.setImage(.init(resource: .playIcon), for: .normal)
         button.addTarget(self, action: #selector(trailerButtonTapped), for: .touchUpInside)
         return button
