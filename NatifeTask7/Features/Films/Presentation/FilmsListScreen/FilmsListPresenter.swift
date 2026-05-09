@@ -37,10 +37,12 @@ final class FilmsListPresenter {
     private var searchTask: Task<Void, Never>?
     private var currentQuery = Constants.currentQuery
     private(set) var currentSort: SortOption = .all
+    private var isConnected: Bool { networkMonitor.isConnected }
     
     private weak var viewController: FilmsListViewControllerProtocol?
     private let viewStateFactory: FilmsListViewStateFactoryProtocol
     private let dataRepository: any DataRepositoryProtocol
+    private let networkMonitor: any NetworkMonitorProtocol
     private let router: FilmsListRouterProtocol
     
     // MARK: - Initialization
@@ -49,11 +51,13 @@ final class FilmsListPresenter {
         viewController: FilmsListViewControllerProtocol,
         viewStateFactory: FilmsListViewStateFactoryProtocol,
         dataRepository: any DataRepositoryProtocol,
+        networkMonitor: any NetworkMonitorProtocol,
         router: FilmsListRouterProtocol
     ) {
         self.viewController = viewController
         self.viewStateFactory = viewStateFactory
         self.dataRepository = dataRepository
+        self.networkMonitor = networkMonitor
         self.router = router
     }
 }
@@ -66,6 +70,11 @@ private extension FilmsListPresenter {
     }
     
     func loadInitial(showLoader: Bool = true) async {
+        guard isConnected else {
+            await render()
+            return
+        }
+        
         await withLoader(show: showLoader) {
             async let filmsPage = dataRepository.fetchFilms(page: 1)
             async let genresList = dataRepository.fetchGenres()
@@ -81,6 +90,7 @@ private extension FilmsListPresenter {
     }
     
     func loadNextPage() async {
+        guard isConnected else { return }
         guard !isLoading, currentPage < totalPages else { return }
         isLoading = true
         defer { isLoading = false }
@@ -140,6 +150,7 @@ private extension FilmsListPresenter {
     }
     
     func sorted(_ films: [FilmsListInfo]) -> [FilmsListInfo] {
+        guard isConnected else { return films }
         switch currentSort {
         case .all: return films
         case .ratingDesc: return films.sorted { $0.rating > $1.rating }
@@ -186,6 +197,11 @@ extension FilmsListPresenter: FilmsListPresenterProtocol {
     }
     
     func didSelectFilm(_ id: Int) {
+        guard isConnected else {
+            viewController?.showError(CommonTextError.internetError)
+            return
+        }
+        
         guard let film = allFilms.first(where: { $0.id == id }) else { return }
         router.openFilmDetail(id, title: film.title)
     }
