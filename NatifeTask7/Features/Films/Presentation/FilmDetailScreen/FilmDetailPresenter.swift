@@ -10,12 +10,14 @@ import Foundation
 protocol FilmDetailPresenterProtocol: AnyObject {
     func viewDidLoad()
     func didTapTrailer()
+    func didTapPoster()
 }
 
 final class FilmDetailPresenter {
     
     // MARK: - Properties
     
+    private var poster: URL?
     private var trailerKey: String?
     private let filmId: Int
     private let initialTitle: String
@@ -56,9 +58,12 @@ private extension FilmDetailPresenter {
         do {
             async let detail = dataRepository.fetchFilm(id: filmId)
             async let trailer = dataRepository.fetchTrailer(id: filmId)
+        
             let resolvedTrailer = try await trailer
             trailerKey = resolvedTrailer?.key
             let viewState = makeState(film: try await detail, trailer: resolvedTrailer)
+            poster = viewState.item.poster
+            
             await MainActor.run {
                 viewController?.render(viewState)
                 viewController?.hideLoader()
@@ -84,5 +89,9 @@ extension FilmDetailPresenter: FilmDetailPresenterProtocol {
     func didTapTrailer() {
         guard let key = trailerKey else { return }
         router.openTrailer(key)
+    }
+    
+    func didTapPoster() {
+        router.openPoster(poster)
     }
 }

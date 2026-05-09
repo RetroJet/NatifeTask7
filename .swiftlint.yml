@@ -3,7 +3,6 @@ strict: true
 warning_threshold: 250
 
 disabled_rules:
-  - identifier_name
   - force_cast
   - trailing_whitespace  # Enable for auto-fix whitespace
   - valid_ibinspectable
@@ -112,8 +111,8 @@ trailing_semicolon: error
 shorthand_operator: error
 no_space_in_method_call: error
 duplicate_imports: error
-operator_whitespace: error
-redundant_optional_initialization: error
+function_name_whitespace: error
+implicit_optional_initialization: error
 return_arrow_whitespace: error
 comma: error
 duplicate_enum_cases: error

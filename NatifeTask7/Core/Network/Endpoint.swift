@@ -17,6 +17,18 @@ protocol Endpoint {
 }
 
 extension Endpoint {
+    var baseURL: URL {
+        guard let url = URL(string: APIConfig.baseURL) else { fatalError(CommonTextError.invalidURL) }
+        return url
+    }
+    
+    var headers: [String: String] {
+        [
+            "Authorization": "Bearer \(APIConfig.tmdbAPIKey)",
+            "accept": "application/json"
+        ]
+    }
+    
     func urlRequest() throws -> URLRequest {
         guard var components = URLComponents(string: baseURL.absoluteString + path) else {
             throw NetworkError.invalidURL

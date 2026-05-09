@@ -28,6 +28,8 @@ final class FilmDetailViewController: UIViewController {
         let image = UIImageView()
         image.contentMode = .scaleAspectFill
         image.clipsToBounds = true
+        image.kf.indicatorType = .activity
+        image.isUserInteractionEnabled = true
         return image
     }()
     
@@ -117,6 +119,7 @@ final class FilmDetailViewController: UIViewController {
         setupNavigationBar()
         setupView()
         setupLayout()
+        setupGestures()
         presenter.viewDidLoad()
     }
 }
@@ -158,8 +161,6 @@ private extension FilmDetailViewController {
             spacerView,
             ratingLabel
         )
-        
-        imageView.kf.indicatorType = .activity
     }
     
     func setupNavigationBar() {
@@ -213,9 +214,24 @@ private extension FilmDetailViewController {
         }
     }
     
+    func setupGestures() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(posterTapped))
+        imageView.addGestureRecognizer(tap)
+    }
+    
+    @objc
+    func posterTapped() {
+        presenter.didTapPoster()
+    }
+    
     @objc
     func trailerButtonTapped() {
         presenter.didTapTrailer()
+    }
+    
+    enum Constants {
+        static let ratingTitle = "Rating:"
+        static let separator = ", "
     }
 }
 
@@ -225,10 +241,11 @@ extension FilmDetailViewController: FilmDetailViewControllerProtocol {
     func render(_ state: FilmDetailViewState) {
         imageView.kf.setImage(with: state.item.poster)
         titleLabel.text = state.item.title
-        subtitleLabel.text = state.item.country.joined(separator: ", ") + ", " + state.item.date
+        subtitleLabel.text = state.item.country
+            .joined(separator: Constants.separator) + Constants.separator + state.item.date
         trailerButton.isHidden = state.item.trailer == nil
         genreLabel.text = state.item.genres
-        ratingLabel.text = state.item.rating
+        ratingLabel.text = "\(Constants.ratingTitle) \(state.item.rating)"
         descriptionLabel.text = state.item.description
     }
     
@@ -237,7 +254,7 @@ extension FilmDetailViewController: FilmDetailViewControllerProtocol {
     }
     
     func showError(_ message: String) {
-        let alert = UIAlertController(title: CommonText.error, message: message, preferredStyle: .alert)
+        let alert = UIAlertController(title: CommonTextError.error, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: CommonText.ok, style: .default))
         present(alert, animated: true)
     }

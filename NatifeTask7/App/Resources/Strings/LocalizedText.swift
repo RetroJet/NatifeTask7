@@ -21,5 +21,5 @@ enum CommonText {
 
 enum CommonTextError {
     static let error = String(localized: "common_text_error")
-    static let invalidURL = "common_invalid_url_error"
+    static let invalidURL = String(localized: "common_invalid_url_error")
 }

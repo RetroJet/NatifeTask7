@@ -11,11 +11,6 @@ import Foundation
 enum FilmsEndpoint: Endpoint {
     case popular(page: Int)
     
-    var baseURL: URL {
-        guard let url = URL(string: API.baseURL) else { fatalError(CommonTextError.invalidURL) }
-        return url
-    }
-    
     var path: String {
         switch self {
         case .popular: return API.popularFilms
@@ -23,13 +18,6 @@ enum FilmsEndpoint: Endpoint {
     }
     
     var method: HTTPMethod { .get }
-    
-    var headers: [String: String] {
-        [
-            "Authorization": "Bearer \(APIConfig.tmdbAPIKey)",
-            "accept": "application/json"
-        ]
-    }
     
     var queryItems: [URLQueryItem] {
         switch self {
@@ -44,7 +32,6 @@ enum FilmsEndpoint: Endpoint {
 
 private extension FilmsEndpoint {
     enum API {
-        static let baseURL = "https://api.themoviedb.org/3"
         static let popularFilms = "/movie/popular"
     }
 }

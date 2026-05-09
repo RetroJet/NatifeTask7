@@ -243,7 +243,7 @@ extension FilmsListViewController: FilmsListViewControllerProtocol {
     }
     
     func showError(_ message: String) {
-        let alert = UIAlertController(title: CommonText.error, message: message, preferredStyle: .alert)
+        let alert = UIAlertController(title: CommonTextError.error, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: CommonText.ok, style: .default))
         present(alert, animated: true)
     }
