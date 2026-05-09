@@ -16,6 +16,7 @@ final class FilmsListAssembly {
             viewController: viewController,
             viewStateFactory: viewStateFactory,
             dataRepository: container.getDataRepository(),
+            networkMonitor: container.getNetworkMonitor(),
             router: router
         )
         

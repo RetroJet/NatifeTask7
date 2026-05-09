@@ -1,6 +1,17 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "common_internet_error" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You are offline. Please, enable your Wi-Fi or connect using cellular data."
+          }
+        }
+      }
+    },
     "common_invalid_url_error" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -8,6 +19,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Invalid base URL"
+          }
+        }
+      }
+    },
+    "common_server_error" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server error"
           }
         }
       }
@@ -30,17 +52,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OK"
-          }
-        }
-      }
-    },
-    "films_list_internet_error" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "You are offline. Please, enable your Wi-Fi or connect using cellular data."
           }
         }
       }

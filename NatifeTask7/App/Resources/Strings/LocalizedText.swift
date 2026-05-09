@@ -11,10 +11,6 @@ enum FilmsListText {
     static let navigationBarTitle = String(localized: "films_list_title")
 }
 
-enum FilmsListTextError {
-    static let internetError = String(localized: "films_list_internet_error")
-}
-
 enum CommonText {
     static let ok = String(localized: "common_text_ok")
 }
@@ -22,4 +18,6 @@ enum CommonText {
 enum CommonTextError {
     static let error = String(localized: "common_text_error")
     static let invalidURL = String(localized: "common_invalid_url_error")
+    static let internetError = String(localized: "common_internet_error")
+    static let requestFailed = String(localized: "common_server_error")
 }

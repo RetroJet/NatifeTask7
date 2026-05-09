@@ -16,11 +16,11 @@ enum NetworkError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidURL:
-            return ErrorText.invalidURL
+            return CommonTextError.invalidURL
         case .requestFailed(let statusCode):
-            return "\(ErrorText.requestFailed): \(statusCode)"
+            return "\(CommonTextError.requestFailed): \(statusCode)"
         case .noInternet:
-            return ErrorText.noInternet
+            return CommonTextError.internetError
         }
     }
 }
@@ -46,13 +46,5 @@ nonisolated final class NetworkService: NetworkServiceProtocol {
             }
             throw NetworkError.requestFailed(statusCode: error.responseCode ?? 0)
         }
-    }
-}
-
-private extension NetworkError {
-    enum ErrorText {
-        static let invalidURL = "Invalid URL"
-        static let requestFailed = "Server error"
-        static let noInternet = FilmsListTextError.internetError
     }
 }
