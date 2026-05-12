@@ -1,5 +1,5 @@
 //
-//  UICollectionView + Reusable.swift
+//  UICollectionView+Reusable.swift
 //  NatifeTask7
 //
 //  Created by Nazar on 19.04.2026.

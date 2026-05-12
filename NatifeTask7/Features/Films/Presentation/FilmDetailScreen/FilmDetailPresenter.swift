@@ -23,7 +23,7 @@ final class FilmDetailPresenter {
     private let initialTitle: String
     
     private weak var viewController: FilmDetailViewControllerProtocol?
-    private let dataRepository: any DataRepositoryProtocol
+    private let dataRepository: any FilmsDataRepositoryProtocol
     private let viewStateFactory: FilmDetailViewStateFactoryProtocol
     private let router: FilmDetailRouterProtocol
     
@@ -32,49 +32,17 @@ final class FilmDetailPresenter {
     init(
         filmId: Int,
         title: String,
-        viewController: FilmDetailViewControllerProtocol,
-        dataRepository: any DataRepositoryProtocol,
+        dataRepository: any FilmsDataRepositoryProtocol,
         viewStateFactory: FilmDetailViewStateFactoryProtocol,
+        viewController: FilmDetailViewControllerProtocol,
         router: FilmDetailRouterProtocol
     ) {
         self.filmId = filmId
         self.initialTitle = title
-        self.viewController = viewController
         self.dataRepository = dataRepository
         self.viewStateFactory = viewStateFactory
+        self.viewController = viewController
         self.router = router
-    }
-}
-
-// MARK: - Private Methods
-
-private extension FilmDetailPresenter {
-    func makeState(film: FilmDetailInfo, trailer: TrailerInfo?) -> FilmDetailViewState {
-        viewStateFactory.make(FilmDetailViewStateFactoryInput(film: film, trailer: trailer))
-    }
-    
-    func loadDetail() async {
-        await MainActor.run { viewController?.showLoader() }
-        do {
-            async let detail = dataRepository.fetchFilm(id: filmId)
-            async let trailer = dataRepository.fetchTrailer(id: filmId)
-        
-            let resolvedTrailer = try await trailer
-            trailerKey = resolvedTrailer?.key
-            let viewState = makeState(film: try await detail, trailer: resolvedTrailer)
-            poster = viewState.item.poster
-            
-            await MainActor.run {
-                viewController?.render(viewState)
-                viewController?.hideLoader()
-            }
-            
-        } catch {
-            await MainActor.run {
-                viewController?.showError(error.localizedDescription)
-                viewController?.hideLoader()
-            }
-        }
     }
 }
 
@@ -82,7 +50,6 @@ private extension FilmDetailPresenter {
 
 extension FilmDetailPresenter: FilmDetailPresenterProtocol {
     func viewDidLoad() {
-        viewController?.setTitle(initialTitle)
         Task { await loadDetail() }
     }
     
@@ -93,5 +60,35 @@ extension FilmDetailPresenter: FilmDetailPresenterProtocol {
     
     func didTapPoster() {
         router.openPoster(poster)
+    }
+}
+
+// MARK: - Private Methods
+
+private extension FilmDetailPresenter {
+    func makeState(film: FilmDetailInfo, trailer: TrailerInfo?) -> FilmDetailViewState.Item {
+        viewStateFactory.make(FilmDetailViewStateFactoryInput(film: film, trailer: trailer))
+    }
+    
+    func loadDetail() async {
+        await MainActor.run { viewController?.render(FilmDetailViewState(title: initialTitle, kind: .loading)) }
+        do {
+            async let detail = dataRepository.fetchFilm(by: filmId)
+            async let trailer = dataRepository.fetchTrailer(by: filmId)
+        
+            let resolvedTrailer = try await trailer
+            trailerKey = resolvedTrailer?.key
+            let state = makeState(film: try await detail, trailer: resolvedTrailer)
+            poster = state.poster
+            
+            await MainActor.run {
+                viewController?.render(FilmDetailViewState(title: initialTitle, kind: .content(state)))
+            }
+            
+        } catch {
+            await MainActor.run {
+                viewController?.render(FilmDetailViewState(title: initialTitle, kind: .error(error.localizedDescription)))
+            }
+        }
     }
 }

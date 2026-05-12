@@ -14,8 +14,10 @@ enum FilmEndpoint: Endpoint {
     
     var path: String {
         switch self {
-        case .detail(let id): return "/movie/\(id)"
-        case .trailer(let id): return "/movie/\(id)/videos"
+        case .detail(let id): 
+            return "/movie/\(id)"
+        case .trailer(let id): 
+            return "/movie/\(id)/videos"
         }
     }
     

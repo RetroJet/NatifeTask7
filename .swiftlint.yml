@@ -143,9 +143,7 @@ custom_rules:
     severity: error
     
 included:
- - Mriia
- - Modules
- - MriiaTests
+ - NatifeTask7
 
 # --- Excludes ---
 excluded:

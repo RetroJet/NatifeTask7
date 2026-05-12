@@ -7,10 +7,10 @@
 
 struct TrailerResponse: Decodable {
     let results: [TrailerDTO]
-}
-
-struct TrailerDTO: Decodable {
-    let key: String
-    let site: String
-    let type: String
+    
+    struct TrailerDTO: Decodable {
+        let key: String
+        let site: String
+        let type: String
+    }
 }

@@ -7,15 +7,22 @@
 
 import Foundation
 
-nonisolated struct FilmsListViewState: Hashable {
-    let items: [FilmsListItemViewState]
-}
-
-nonisolated struct FilmsListItemViewState: Hashable {
-    let id: Int
-    let poster: URL?
-    let title: String
-    let genre: String
-    let rating: String
-    let date: String
+nonisolated struct FilmsListViewState {
+    enum Kind {
+        case loading
+        case content([Item])
+        case error(String)
+    }
+    
+    nonisolated struct Item: Hashable {
+        let id: Int
+        let poster: URL?
+        let title: String
+        let genre: String
+        let rating: String
+        let date: String
+    }
+    
+    let kind: Kind
+    let animated: Bool
 }

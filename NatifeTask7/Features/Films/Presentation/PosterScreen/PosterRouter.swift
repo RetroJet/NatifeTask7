@@ -15,7 +15,11 @@ final class PosterRouter {
     
     // MARK: - Properties
     
-    weak var viewController: UIViewController?
+    private weak var viewController: UIViewController?
+    
+    init(viewController: UIViewController) {
+        self.viewController = viewController
+    }
 }
 
 // MARK: - PosterRouterProtocol

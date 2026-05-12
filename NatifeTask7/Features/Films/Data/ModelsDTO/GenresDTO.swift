@@ -7,9 +7,9 @@
 
 struct GenresResponse: Decodable {
     let genres: [GenresDTO]
-}
-
-struct GenresDTO: Decodable {
-    let id: Int
-    let name: String
+    
+    struct GenresDTO: Decodable {
+        let id: Int
+        let name: String
+    }
 }

@@ -13,7 +13,8 @@ enum GenresEndpoint: Endpoint {
     
     var path: String {
         switch self {
-        case .genres: return API.genresFilm
+        case .genres:
+            return Constant.API.genresFilm
         }
     }
     
@@ -23,7 +24,9 @@ enum GenresEndpoint: Endpoint {
 }
 
 private extension GenresEndpoint {
-    enum API {
-        static let genresFilm = "/genre/movie/list"
+    enum Constant {
+        enum API {
+            static let genresFilm = "/genre/movie/list"
+        }
     }
 }

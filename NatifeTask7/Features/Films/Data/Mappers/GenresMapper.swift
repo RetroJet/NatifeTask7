@@ -6,7 +6,7 @@
 //
 
 struct GenresMapper {
-    static func toDomain(_ responce: GenresResponse) -> [GenresInfo] {
-        responce.genres.map { GenresInfo(id: $0.id, name: $0.name) }
+    static func toDomain(_ response: GenresResponse) -> [GenresInfo] {
+        response.genres.map { GenresInfo(id: $0.id, name: $0.name) }
     }
 }

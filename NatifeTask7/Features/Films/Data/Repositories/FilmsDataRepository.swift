@@ -1,5 +1,5 @@
 //
-//  DataRepository.swift
+//  FilmsDataRepository.swift
 //  NatifeTask7
 //
 //  Created by Nazar on 24.04.2026.
@@ -7,14 +7,7 @@
 
 import Foundation
 
-protocol DataRepositoryProtocol {
-    func fetchFilms(page: Int) async throws -> FilmsPage
-    func fetchGenres() async throws -> [GenresInfo]
-    func fetchFilm(id: Int) async throws -> FilmDetailInfo
-    func fetchTrailer(id: Int) async throws -> TrailerInfo?
-}
-
-nonisolated final class DataRepository {
+nonisolated final class FilmsDataRepository {
     
     // MARK: - Properties
     
@@ -27,10 +20,10 @@ nonisolated final class DataRepository {
     }
 }
 
-// MARK: - DataRepositoryProtocol
+// MARK: - FilmsDataRepositoryProtocol
 
-extension DataRepository: DataRepositoryProtocol {
-    func fetchFilms(page: Int = 1) async throws -> FilmsPage {
+extension FilmsDataRepository: FilmsDataRepositoryProtocol {
+    func fetchFilms(page: Int) async throws -> FilmsPage {
         let response: FilmsListResponse = try await networkService.request(from: FilmsEndpoint.popular(page: page))
         return FilmsListMapper.toDomain(response)
     }
@@ -40,12 +33,12 @@ extension DataRepository: DataRepositoryProtocol {
         return GenresMapper.toDomain(response)
     }
     
-    func fetchFilm(id: Int) async throws -> FilmDetailInfo {
+    func fetchFilm(by id: Int) async throws -> FilmDetailInfo {
         let response: FilmDetailDTO = try await networkService.request(from: FilmEndpoint.detail(id: id))
         return FilmDetailMapper.toDomain(response)
     }
     
-    func fetchTrailer(id: Int) async throws -> TrailerInfo? {
+    func fetchTrailer(by id: Int) async throws -> TrailerInfo? {
         let response: TrailerResponse = try await networkService.request(from: FilmEndpoint.trailer(id: id))
         return TrailerMapper.toDomain(response)
     }

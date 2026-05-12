@@ -35,18 +35,16 @@ final class FilmsListPresenter {
     
     private var totalPages = 1
     private var currentPage = 1
-    private var allFilms: [FilmsListInfo] = []
+    private var allFilms: [FilmsPage.FilmsListInfo] = []
     private var isLoading = false
     private var genres: [GenresInfo] = []
     private var searchTask: Task<Void, Never>?
-    private var currentQuery = Constants.currentQuery
+    private var currentQuery = Constant.Search.currentQuery
     private(set) var currentSort: SortOption = .all
-    private var isConnected: Bool { networkMonitor.isConnected }
     
     private weak var viewController: FilmsListViewControllerProtocol?
     private let viewStateFactory: FilmsListViewStateFactoryProtocol
-    private let dataRepository: any DataRepositoryProtocol
-    private let networkMonitor: any NetworkMonitorProtocol
+    private let dataRepository: any FilmsDataRepositoryProtocol
     private let router: FilmsListRouterProtocol
     
     // MARK: - Initialization
@@ -54,125 +52,13 @@ final class FilmsListPresenter {
     init(
         viewController: FilmsListViewControllerProtocol,
         viewStateFactory: FilmsListViewStateFactoryProtocol,
-        dataRepository: any DataRepositoryProtocol,
-        networkMonitor: any NetworkMonitorProtocol,
+        dataRepository: any FilmsDataRepositoryProtocol,
         router: FilmsListRouterProtocol
     ) {
         self.viewController = viewController
         self.viewStateFactory = viewStateFactory
         self.dataRepository = dataRepository
-        self.networkMonitor = networkMonitor
         self.router = router
-    }
-}
-
-// MARK: - Private Methods
-
-private extension FilmsListPresenter {
-    func makeState(films: [FilmsListInfo], genres: [GenresInfo]) -> FilmsListViewState {
-        viewStateFactory.make(FilmsListViewStateFactoryInput(films: films, genres: genres))
-    }
-    
-    func loadInitial(showLoader: Bool = true) async {
-        guard isConnected else {
-            await MainActor.run { viewController?.showError(CommonTextError.internetError) }
-            await render()
-            return
-        }
-        
-        await withLoader(show: showLoader) {
-            async let filmsPage = dataRepository.fetchFilms(page: 1)
-            async let genresList = dataRepository.fetchGenres()
-            
-            let page = try await filmsPage
-            genres = try await genresList
-            allFilms = page.films
-            currentPage = 1
-            totalPages = page.totalPages
-            
-            await render()
-        }
-    }
-    
-    func loadNextPage() async {
-        guard isConnected else { return }
-        guard !isLoading, currentPage < totalPages else { return }
-        isLoading = true
-        defer { isLoading = false }
-        
-        do {
-            let nextPage = currentPage + 1
-            let page = try await dataRepository.fetchFilms(page: nextPage)
-            let existingIds = Set(allFilms.map(\.id))
-            let newFilms = page.films.filter { !existingIds.contains($0.id) }
-            allFilms += newFilms
-            
-            currentPage = nextPage
-            await render(animated: false)
-        } catch {
-            await handle(error)
-        }
-    }
-    
-    func withLoader(show: Bool = true, _ work: () async throws -> Void) async {
-        if show { await MainActor.run { viewController?.showLoader() } }
-        do {
-            try await work()
-        } catch {
-            await handle(error)
-        }
-        if show { await MainActor.run { viewController?.hideLoader() } }
-    }
-    
-    func render(animated: Bool = true) async {
-        let trimmed = currentQuery.trimmingCharacters(in: .whitespacesAndNewlines)
-        let films = trimmed.count >= Constants.minSearchLength
-        ? allFilms.filter { $0.title.range(of: trimmed, options: .caseInsensitive) != nil }
-        : allFilms
-        let viewState = makeState(films: sorted(films), genres: genres)
-        await MainActor.run {
-            viewController?.render(viewState, animated: animated)
-        }
-    }
-    
-    func handle(_ error: Error) async {
-        await MainActor.run {
-            print("\(ErrorText.fetchFilms)\(error)")
-            viewController?.showError(error.localizedDescription)
-        }
-    }
-    
-    func search(_ query: String) async {
-        currentQuery = query
-        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard trimmed.count >= Constants.minSearchLength else {
-            await render()
-            return
-        }
-        try? await Task.sleep(nanoseconds: Constants.nanoseconds)
-        guard !Task.isCancelled else { return }
-        await render()
-    }
-    
-    func sorted(_ films: [FilmsListInfo]) -> [FilmsListInfo] {
-        guard isConnected else { return films }
-        switch currentSort {
-        case .all: return films
-        case .ratingDesc: return films.sorted { $0.rating > $1.rating }
-        case .ratingAsc: return films.sorted { $0.rating < $1.rating }
-        case .yearDesc: return films.sorted { $0.date > $1.date }
-        case .yearAsc: return films.sorted { $0.date < $1.date }
-        }
-    }
-    
-    enum Constants {
-        static let currentQuery = ""
-        static let minSearchLength = 2
-        static let nanoseconds: UInt64 = 500_000_000
-    }
-    
-    enum ErrorText {
-        static let fetchFilms = "Failed to fetch films"
     }
 }
 
@@ -202,12 +88,114 @@ extension FilmsListPresenter: FilmsListPresenterProtocol {
     }
     
     func didSelectFilm(_ id: Int) {
-        guard isConnected else {
-            viewController?.showError(CommonTextError.internetError)
-            return
-        }
-        
         guard let film = allFilms.first(where: { $0.id == id }) else { return }
         router.openFilmDetail(id, title: film.title)
+    }
+}
+
+// MARK: - Private Methods
+
+private extension FilmsListPresenter {
+    func makeState(films: [FilmsPage.FilmsListInfo], genres: [GenresInfo]) -> [FilmsListViewState.Item] {
+        viewStateFactory.make(FilmsListViewStateFactoryInput(films: films, genres: genres))
+    }
+    
+    func loadInitial(showLoader: Bool = true) async {
+        if showLoader {
+            await MainActor.run {
+                viewController?.render(FilmsListViewState(kind: .loading, animated: false))
+            }
+        }
+        
+        do {
+            async let filmsPage = dataRepository.fetchFilms(page: 1)
+            async let genresList = dataRepository.fetchGenres()
+            
+            let page = try await filmsPage
+            genres = try await genresList
+            allFilms = page.films
+            currentPage = 1
+            totalPages = page.totalPages
+            
+            await render()
+        } catch {
+            await handle(error)
+        }
+    }
+    
+    func loadNextPage() async {
+        guard !isLoading, currentPage < totalPages else { return }
+        isLoading = true
+        defer { isLoading = false }
+        
+        do {
+            let nextPage = currentPage + 1
+            let page = try await dataRepository.fetchFilms(page: nextPage)
+            let existingIds = Set(allFilms.map(\.id))
+            let newFilms = page.films.filter { !existingIds.contains($0.id) }
+            allFilms += newFilms
+            
+            currentPage = nextPage
+            await render(animated: false)
+        } catch {
+            await handle(error)
+        }
+    }
+    
+    func render(animated: Bool = true) async {
+        let trimmed = currentQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        let films = trimmed.count >= Constant.Search.minSearchLength
+        ? allFilms.filter { $0.title.range(of: trimmed, options: .caseInsensitive) != nil }
+        : allFilms
+        let items = makeState(films: sorted(films), genres: genres)
+        await MainActor.run {
+            viewController?.render(FilmsListViewState(kind: .content(items), animated: animated))
+        }
+    }
+    
+    func handle(_ error: Error) async {
+        await MainActor.run {
+            print("\(Constant.ErrorText.fetchFilms)\(error)")
+            viewController?.render(FilmsListViewState(kind: .error(error.localizedDescription), animated: false))
+        }
+    }
+    
+    func search(_ query: String) async {
+        currentQuery = query
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed.count >= Constant.Search.minSearchLength else {
+            await render()
+            return
+        }
+        try? await Task.sleep(nanoseconds: Constant.Search.nanoseconds)
+        guard !Task.isCancelled else { return }
+        await render()
+    }
+    
+    func sorted(_ films: [FilmsPage.FilmsListInfo]) -> [FilmsPage.FilmsListInfo] {
+        switch currentSort {
+        case .all:
+            return films
+        case .ratingDesc:
+            return films.sorted { $0.rating > $1.rating }
+        case .ratingAsc:
+            return films.sorted { $0.rating < $1.rating }
+        case .yearDesc:
+            return films.sorted { $0.date > $1.date }
+        case .yearAsc:
+            return films.sorted { $0.date < $1.date }
+        }
+    }
+    
+    enum Constant {
+        enum Search {
+            static let currentQuery = ""
+            static let minSearchLength = 2
+            static let nanoseconds: UInt64 = 500_000_000
+        }
+        
+        enum ErrorText {
+            static let fetchFilms = "Failed to fetch films"
+        }
     }
 }

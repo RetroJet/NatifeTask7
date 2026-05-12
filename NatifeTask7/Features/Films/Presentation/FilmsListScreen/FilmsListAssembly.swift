@@ -9,18 +9,20 @@ import UIKit
 
 final class FilmsListAssembly {
     static func build(container: DIContainerProtocol) -> UIViewController {
-        let router = FilmsListRouter(container: container)
         let viewController = FilmsListViewController()
         let viewStateFactory = FilmsListViewStateFactory()
+        let router = FilmsListRouter(
+            viewController: viewController
+        ) { filmId, title in
+                FilmDetailAssembly.build(container: container, filmId: filmId, title: title)
+        }
         let presenter = FilmsListPresenter(
             viewController: viewController,
             viewStateFactory: viewStateFactory,
-            dataRepository: container.getDataRepository(),
-            networkMonitor: container.getNetworkMonitor(),
+            dataRepository: container.getFilmsDataRepository(),
             router: router
         )
         
-        router.viewController = viewController
         viewController.inject(presenter: presenter)
         
         return viewController

@@ -7,16 +7,19 @@
 
 struct TrailerMapper {
     static func toDomain(_ response: TrailerResponse) -> TrailerInfo? {
-        guard let trailer = response.results.first(where: {
-            $0.type == Constants.trailerType && $0.site == Constants.youtubeSite
-        }) else { return nil }
-        
+        guard let trailer = response.results.first(
+            where: {
+                $0.type == Constant.trailerType && $0.site == Constant.youtubeSite
+            }
+        ) else {
+            return nil
+        }
         return TrailerInfo(key: trailer.key)
     }
 }
 
 private extension TrailerMapper {
-    enum Constants {
+    enum Constant {
         static let trailerType = "Trailer"
         static let youtubeSite = "YouTube"
     }

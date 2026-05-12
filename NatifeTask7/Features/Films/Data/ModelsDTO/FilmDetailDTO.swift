@@ -11,7 +11,7 @@ struct FilmDetailDTO: Decodable {
     let title: String
     let originCountry: [String]
     let releaseDate: String
-    let genres: [GenresDTO]
+    let genres: [GenresResponse.GenresDTO]
     let voteAverage: Double
     let overview: String
         

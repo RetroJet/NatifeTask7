@@ -18,7 +18,9 @@ protocol Endpoint {
 
 extension Endpoint {
     var baseURL: URL {
-        guard let url = URL(string: APIConfig.baseURL) else { fatalError(CommonTextError.invalidURL) }
+        guard let url = URL(string: APIConfig.baseURL) else {
+            fatalError(NetworkError.invalidURL.localizedDescription)
+        }
         return url
     }
     

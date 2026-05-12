@@ -9,17 +9,16 @@ import UIKit
 
 final class PosterAssembly {
     static func build(poster: URL?) -> UIViewController {
-        let router = PosterRouter()
         let viewController = PosterViewController()
         let viewStateFactory = PosterViewStateFactory()
+        let router = PosterRouter(viewController: viewController)
         let presenter = PosterPresenter(
             poster: poster,
             viewController: viewController,
             viewStateFactory: viewStateFactory,
             router: router
         )
-        
-        router.viewController = viewController
+
         viewController.inject(presenter: presenter)
         
         return viewController

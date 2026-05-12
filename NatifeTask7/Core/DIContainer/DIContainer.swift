@@ -6,8 +6,7 @@
 //
 
 protocol DIContainerProtocol {
-    func getDataRepository() -> any DataRepositoryProtocol
-    func getNetworkMonitor() -> any NetworkMonitorProtocol
+    func getFilmsDataRepository() -> any FilmsDataRepositoryProtocol
 }
 
 final class DIContainer {
@@ -15,21 +14,20 @@ final class DIContainer {
     // MARK: - Properties
     
     private let networkService: any NetworkServiceProtocol
-    private let dataRepository: any DataRepositoryProtocol
+    private let dataRepository: any FilmsDataRepositoryProtocol
     private let networkMonitor: any NetworkMonitorProtocol
     
     // MARK: - Initialization
     
     init() {
-        self.networkService = NetworkService()
-        self.dataRepository = DataRepository(networkService: networkService)
         self.networkMonitor = NetworkMonitor()
+        self.networkService = NetworkService(networkMonitor: networkMonitor)
+        self.dataRepository = FilmsDataRepository(networkService: networkService)
     }
 }
 
 // MARK: - DIContainerProtocol
 
 extension DIContainer: DIContainerProtocol {
-    func getDataRepository() -> any DataRepositoryProtocol { dataRepository }
-    func getNetworkMonitor() -> any NetworkMonitorProtocol { networkMonitor }
+    func getFilmsDataRepository() -> any FilmsDataRepositoryProtocol { dataRepository }
 }
