@@ -11,26 +11,26 @@ struct FilmsListResponse: Decodable {
     let results: [FilmsListDTO]
     
     enum CodingKeys: String, CodingKey {
-            case page
-            case totalPages = "total_pages"
-            case results
-        }
-}
-
-struct FilmsListDTO: Decodable {
-    let id: Int
-    let posterPath: String?
-    let title: String
-    let genreIds: [Int]
-    let voteAverage: Double
-    let releaseDate: String
+        case page
+        case totalPages = "total_pages"
+        case results
+    }
     
-    enum CodingKeys: String, CodingKey {
-        case id
-        case posterPath = "poster_path"
-        case title
-        case genreIds = "genre_ids"
-        case voteAverage = "vote_average"
-        case releaseDate = "release_date"
+    struct FilmsListDTO: Decodable {
+        let id: Int
+        let posterPath: String?
+        let title: String
+        let genreIds: [Int]
+        let voteAverage: Double
+        let releaseDate: String
+        
+        enum CodingKeys: String, CodingKey {
+            case id
+            case posterPath = "poster_path"
+            case title
+            case genreIds = "genre_ids"
+            case voteAverage = "vote_average"
+            case releaseDate = "release_date"
+        }
     }
 }

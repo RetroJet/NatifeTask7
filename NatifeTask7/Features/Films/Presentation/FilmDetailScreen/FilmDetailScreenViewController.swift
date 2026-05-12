@@ -11,13 +11,9 @@ import UIKit
 
 protocol FilmDetailViewControllerProtocol: AnyObject {
     func render(_ state: FilmDetailViewState)
-    func setTitle(_ title: String)
-    func showError(_ message: String)
-    func showLoader()
-    func hideLoader()
 }
 
-final class FilmDetailViewController: UIViewController {
+final class FilmDetailViewController: BaseViewController<FilmDetailPresenterProtocol> {
     
     // MARK: - UI Elements
     
@@ -102,66 +98,75 @@ final class FilmDetailViewController: UIViewController {
         return spacer
     }()
     
-    private lazy var activityIndicator: UIActivityIndicatorView = {
-        let indicator = UIActivityIndicatorView(style: .large)
-        indicator.hidesWhenStopped = true
-        indicator.color = .gray
-        return indicator
-    }()
-    
     // MARK: - Properties
     
-    private var presenter: FilmDetailPresenterProtocol!
+    lazy var activityIndicator = makeActivityIndicator()
     
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupNavigationBar()
         setupView()
         setupLayout()
-        setupGestures()
         presenter.viewDidLoad()
     }
 }
 
-// MARK: - Internal Methods
+// MARK: - FilmDetailViewControllerProtocol
 
-extension FilmDetailViewController {
-    func inject(presenter: FilmDetailPresenterProtocol) {
-        self.presenter = presenter
+extension FilmDetailViewController: FilmDetailViewControllerProtocol {
+    func render(_ state: FilmDetailViewState) {
+        title = state.title
+        
+        switch state.kind {
+        case .loading:
+            activityIndicator.startAnimating()
+        case .content(let content):
+            activityIndicator.stopAnimating()
+            renderContent(content)
+        case .error(let message):
+            showError(message)
+        }
     }
 }
+
+// MARK: - ActivityIndicatableProtocol
+
+extension FilmDetailViewController: ActivityIndicatableProtocol {}
 
 // MARK: - Private Methods
 
 private extension FilmDetailViewController {
     func setupView() {
         view.backgroundColor = .systemBackground
-        view.addSubviews(
-            scrollView,
-            activityIndicator
-        )
+        view.addSubviews([
+            scrollView
+        ])
+        
+        setupActivityIndicator()
         
         scrollView.addSubview(contentView)
-        contentView.addSubviews(
+        contentView.addSubviews([
             imageView,
             infoStackView,
             mediaStackView,
             descriptionLabel
-        )
+        ])
         
-        infoStackView.addArrangedSubiviews(
+        infoStackView.addArrangedSubviews([
             titleLabel,
             subtitleLabel,
             genreLabel
-        )
+        ])
         
-        mediaStackView.addArrangedSubiviews(
+        mediaStackView.addArrangedSubviews([
             trailerButton,
             spacerView,
             ratingLabel
-        )
+        ])
+        
+        setupNavigationBar()
+        setupGestures()
     }
     
     func setupNavigationBar() {
@@ -209,10 +214,23 @@ private extension FilmDetailViewController {
             make.horizontalEdges.equalToSuperview().inset(20)
             make.bottom.equalToSuperview().offset(-10)
         }
-        
-        activityIndicator.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+    }
+    
+    func renderContent(_ content: FilmDetailViewState.Item) {
+        imageView.kf.setImage(with: content.poster)
+        titleLabel.text = content.title
+        subtitleLabel.text = content.country
+            .joined(separator: Constant.UIString.separator) + Constant.UIString.separator + content.date
+        trailerButton.isHidden = content.trailer == nil
+        genreLabel.text = content.genres
+        ratingLabel.text = "\(Constant.UIString.ratingTitle) \(content.rating)"
+        descriptionLabel.text = content.description
+    }
+    
+    func showError(_ message: String) {
+        let alert = UIAlertController(title: CommonTextError.error, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: CommonText.ok, style: .default))
+        present(alert, animated: true)
     }
     
     func setupGestures() {
@@ -230,41 +248,10 @@ private extension FilmDetailViewController {
         presenter.didTapTrailer()
     }
     
-    enum Constants {
-        static let ratingTitle = "Rating:"
-        static let separator = ", "
-    }
-}
-
-// MARK: - FilmDetailViewControllerProtocol
-
-extension FilmDetailViewController: FilmDetailViewControllerProtocol {
-    func render(_ state: FilmDetailViewState) {
-        imageView.kf.setImage(with: state.item.poster)
-        titleLabel.text = state.item.title
-        subtitleLabel.text = state.item.country
-            .joined(separator: Constants.separator) + Constants.separator + state.item.date
-        trailerButton.isHidden = state.item.trailer == nil
-        genreLabel.text = state.item.genres
-        ratingLabel.text = "\(Constants.ratingTitle) \(state.item.rating)"
-        descriptionLabel.text = state.item.description
-    }
-    
-    func setTitle(_ title: String) {
-        self.title = title
-    }
-    
-    func showError(_ message: String) {
-        let alert = UIAlertController(title: CommonTextError.error, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: CommonText.ok, style: .default))
-        present(alert, animated: true)
-    }
-    
-    func showLoader() {
-        activityIndicator.startAnimating()
-    }
-    
-    func hideLoader() {
-        activityIndicator.stopAnimating()
+    enum Constant {
+        enum UIString {
+            static let ratingTitle = String(localized: "film_detail_rating_title")
+            static let separator = ", "
+        }
     }
 }

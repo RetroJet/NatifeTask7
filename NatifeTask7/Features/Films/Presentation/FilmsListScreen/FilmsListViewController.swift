@@ -9,19 +9,16 @@ import SnapKit
 import UIKit
 
 protocol FilmsListViewControllerProtocol: AnyObject {
-    func render(_ state: FilmsListViewState, animated: Bool)
-    func showError(_ message: String)
-    func showLoader()
-    func hideLoader()
+    func render(_ state: FilmsListViewState)
 }
 
-final class FilmsListViewController: UIViewController {
+final class FilmsListViewController: BaseViewController<FilmsListPresenterProtocol> {
     
     // MARK: - UI Elements
     
     private lazy var rightBarButton: UIButton = {
         let button = UIButton()
-        button.setImage(.init(systemName: UIStrings.iconImageDecrease), for: .normal)
+        button.setImage(.init(systemName: Constant.UIString.iconImageDecrease), for: .normal)
         button.tintColor = .black
         return button
     }()
@@ -30,7 +27,7 @@ final class FilmsListViewController: UIViewController {
         let searchBar = UISearchBar()
         searchBar.backgroundColor = .white
         searchBar.searchBarStyle = .minimal
-        searchBar.placeholder = UIStrings.searchBarTitle
+        searchBar.placeholder = Constant.UIString.searchBarTitle
         searchBar.enablesReturnKeyAutomatically = false
         searchBar.delegate = self
         return searchBar
@@ -54,8 +51,8 @@ final class FilmsListViewController: UIViewController {
         return collectionView
     }()
     
-    private lazy var diffableDataSource: UICollectionViewDiffableDataSource<Int, FilmsListItemViewState> = {
-        let dataSource = UICollectionViewDiffableDataSource<Int, FilmsListItemViewState>(
+    private lazy var diffableDataSource: UICollectionViewDiffableDataSource<Int, FilmsListViewState.Item> = {
+        let dataSource = UICollectionViewDiffableDataSource<Int, FilmsListViewState.Item>(
             collectionView: collectionView
         ) { collectionView, indexPath, item in
             let cell: FilmsListCell = collectionView.dequeue(for: indexPath)
@@ -71,16 +68,9 @@ final class FilmsListViewController: UIViewController {
         return refresh
     }()
     
-    private lazy var activityIndicator: UIActivityIndicatorView = {
-        let indicator = UIActivityIndicatorView(style: .large)
-        indicator.hidesWhenStopped = true
-        indicator.color = .gray
-        return indicator
-    }()
-    
     private lazy var emptyLabel: UILabel = {
         let label = UILabel()
-        label.text = UIStrings.emptyLabelTitle
+        label.text = Constant.UIString.emptyLabelTitle
         label.textColor = .gray
         label.font = .systemFont(ofSize: 18)
         label.textAlignment = .center
@@ -90,13 +80,12 @@ final class FilmsListViewController: UIViewController {
     
     // MARK: - Properties
     
-    private var presenter: FilmsListPresenterProtocol!
+    lazy var activityIndicator = makeActivityIndicator()
     
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupNavigationBar()
         setupView()
         setupLayout()
         presenter.viewDidLoad()
@@ -104,35 +93,83 @@ final class FilmsListViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        let topInset = searchBar.frame.maxY - view.safeAreaInsets.top + Layout.searchBarTopInset
+        let topInset = searchBar.frame.maxY - view.safeAreaInsets.top + Constant.Layout.searchBarTopInset
         collectionView.contentInset.top = topInset
     }
 }
 
-// MARK: - Internal Methods
+// MARK: - FilmsListViewControllerProtocol
 
-extension FilmsListViewController {
-    func inject(presenter: FilmsListPresenterProtocol) {
-        self.presenter = presenter
+extension FilmsListViewController: FilmsListViewControllerProtocol {
+    func render(_ state: FilmsListViewState) {
+        switch state.kind {
+        case .loading:
+            activityIndicator.startAnimating()
+        case .content(let content):
+            activityIndicator.stopAnimating()
+            applySnapshot(with: content, animated: state.animated)
+            emptyLabel.isHidden = !content.isEmpty
+        case .error(let message):
+            activityIndicator.stopAnimating()
+            showError(message)
+        }
     }
 }
+
+// MARK: - UICollectionViewDelegate
+
+extension FilmsListViewController: UICollectionViewDelegate {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        willDisplay cell: UICollectionViewCell,
+        forItemAt indexPath: IndexPath
+    ) {
+        let total = diffableDataSource.snapshot().numberOfItems
+        if indexPath.item >= total - Constant.Layout.paginationThreshold {
+            presenter.didScrollNearEnd()
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        presenter.didSelectFilm(item.id)
+    }
+}
+
+// MARK: - UISearchBarDelegate
+
+extension FilmsListViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        presenter.didChangeSearchText(searchText)
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
+}
+
+// MARK: - ActivityIndicatableProtocol
+
+extension FilmsListViewController: ActivityIndicatableProtocol {}
 
 // MARK: - Private Methods
 
 private extension FilmsListViewController {
     func setupView() {
         view.backgroundColor = .white
-        view.addSubviews(
+        view.addSubviews([
             collectionView,
             separatorView,
             searchBar,
-            activityIndicator,
             emptyLabel
-        )
+        ])
+        
+        setupActivityIndicator()
+        setupNavigationBar()
     }
     
     func setupNavigationBar() {
-        title = FilmsListText.navigationBarTitle
+        title = Constant.UIString.navigationBarTitle
         
         let appearance = UINavigationBarAppearance()
         appearance.shadowColor = .separator
@@ -164,10 +201,6 @@ private extension FilmsListViewController {
             make.bottom.equalTo(view.snp.bottom)
         }
         
-        activityIndicator.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
-        
         emptyLabel.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
@@ -188,13 +221,13 @@ private extension FilmsListViewController {
         
         let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
         let section = NSCollectionLayoutSection(group: group)
-        section.interGroupSpacing = Layout.interGroupSpacing
+        section.interGroupSpacing = Constant.Layout.interGroupSpacing
         
         return UICollectionViewCompositionalLayout(section: section)
     }
     
-    func applySnapshot(with items: [FilmsListItemViewState], animated: Bool) {
-        var snapshot = NSDiffableDataSourceSnapshot<Int, FilmsListItemViewState>()
+    func applySnapshot(with items: [FilmsListViewState.Item], animated: Bool) {
+        var snapshot = NSDiffableDataSourceSnapshot<Int, FilmsListViewState.Item>()
         snapshot.appendSections([0])
         snapshot.appendItems(items)
         diffableDataSource.apply(snapshot, animatingDifferences: animated)
@@ -213,6 +246,12 @@ private extension FilmsListViewController {
         return UIMenu(children: actions)
     }
     
+    func showError(_ message: String) {
+        let alert = UIAlertController(title: CommonTextError.error, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: CommonText.ok, style: .default))
+        present(alert, animated: true)
+    }
+    
     @objc
     func handleRefresh() {
         Task {
@@ -221,70 +260,18 @@ private extension FilmsListViewController {
         }
     }
     
-    enum UIStrings {
-        static let iconImageDecrease = "line.3.horizontal.decrease"
-        static let searchBarTitle = String(localized: "search_bar_title")
-        static let emptyLabelTitle = "No movies found"
-    }
-    
-    enum Layout {
-        static let searchBarTopInset: CGFloat = 10
-        static let interGroupSpacing: CGFloat = 25
-        static let paginationThreshold = 5
-    }
-}
-
-// MARK: - FilmsListViewControllerProtocol
-
-extension FilmsListViewController: FilmsListViewControllerProtocol {
-    func render(_ state: FilmsListViewState, animated: Bool) {
-        applySnapshot(with: state.items, animated: animated)
-        emptyLabel.isHidden = !state.items.isEmpty
-    }
-    
-    func showError(_ message: String) {
-        let alert = UIAlertController(title: CommonTextError.error, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: CommonText.ok, style: .default))
-        present(alert, animated: true)
-    }
-    
-    func showLoader() {
-        activityIndicator.startAnimating()
-    }
-    
-    func hideLoader() {
-        activityIndicator.stopAnimating()
-    }
-}
-
-// MARK: - UICollectionViewDelegate
-
-extension FilmsListViewController: UICollectionViewDelegate {
-    func collectionView(
-        _ collectionView: UICollectionView,
-        willDisplay cell: UICollectionViewCell,
-        forItemAt indexPath: IndexPath
-    ) {
-        let total = diffableDataSource.snapshot().numberOfItems
-        if indexPath.item >= total - Layout.paginationThreshold {
-            presenter.didScrollNearEnd()
+    enum Constant {
+        enum UIString {
+            static let navigationBarTitle = String(localized: "films_list_title")
+            static let searchBarTitle = String(localized: "search_bar_title")
+            static let emptyLabelTitle = String(localized: "empty_label_title")
+            static let iconImageDecrease = "line.3.horizontal.decrease"
         }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        presenter.didSelectFilm(item.id)
-    }
-}
-
-// MARK: - UISearchBarDelegate
-
-extension FilmsListViewController: UISearchBarDelegate {
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        presenter.didChangeSearchText(searchText)
-    }
-    
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
+        
+        enum Layout {
+            static let searchBarTopInset: CGFloat = 10
+            static let interGroupSpacing: CGFloat = 25
+            static let paginationThreshold = 5
+        }
     }
 }

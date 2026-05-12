@@ -13,15 +13,15 @@ struct FilmDetailViewStateFactoryInput {
 }
 
 protocol FilmDetailViewStateFactoryProtocol {
-    func make(_ input: FilmDetailViewStateFactoryInput) -> FilmDetailViewState
+    func make(_ input: FilmDetailViewStateFactoryInput) -> FilmDetailViewState.Item
 }
 
 struct FilmDetailViewStateFactory: FilmDetailViewStateFactoryProtocol {
-    func make(_ input: FilmDetailViewStateFactoryInput) -> FilmDetailViewState {
-        let poster = input.film.poster.flatMap { URL(string: Image.backdropBaseURL + $0) }
+    func make(_ input: FilmDetailViewStateFactoryInput) -> FilmDetailViewState.Item {
+        let poster = input.film.poster.flatMap { URL(string: Constant.Image.backdropBaseURL + $0) }
         let rating = String(format: "%.1f", input.film.rating)
         let date = String(input.film.date.prefix(4))
-        let item = FilmDetailItemViewState(
+        let item = FilmDetailViewState.Item(
             poster: poster,
             title: input.film.title,
             country: input.film.country,
@@ -32,12 +32,14 @@ struct FilmDetailViewStateFactory: FilmDetailViewStateFactoryProtocol {
             description: input.film.description
         )
         
-        return FilmDetailViewState(item: item)
+        return item
     }
 }
 
 private extension FilmDetailViewStateFactory {
-    enum Image {
-        static let backdropBaseURL = "https://image.tmdb.org/t/p/w1280"
+    enum Constant {
+        enum Image {
+            static let backdropBaseURL = "https://image.tmdb.org/t/p/w1280"
+        }
     }
 }

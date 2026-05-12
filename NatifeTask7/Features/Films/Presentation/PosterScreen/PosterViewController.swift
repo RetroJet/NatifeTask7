@@ -13,14 +13,14 @@ protocol PosterViewControllerProtocol: AnyObject {
     func render(_ state: PosterViewState)
 }
 
-final class PosterViewController: UIViewController {
+final class PosterViewController: BaseViewController<PosterPresenterProtocol> {
     
     // MARK: - UI Elements
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
-        scrollView.minimumZoomScale = Zoom.minimumZoom
-        scrollView.maximumZoomScale = Zoom.maximumZoom
+        scrollView.minimumZoomScale = Constant.Zoom.minimumZoom
+        scrollView.maximumZoomScale = Constant.Zoom.maximumZoom
         scrollView.bouncesZoom = true
         scrollView.showsVerticalScrollIndicator = false
         scrollView.showsHorizontalScrollIndicator = false
@@ -38,7 +38,7 @@ final class PosterViewController: UIViewController {
     
     private lazy var closeButton: UIButton = {
         let button = UIButton()
-        button.setImage(.init(systemName: Constants.closeIcon), for: .normal)
+        button.setImage(.init(systemName: Constant.Icon.closeIcon), for: .normal)
         button.tintColor = .black
         button.layer.cornerRadius = 20
         button.layer.borderWidth = 0.5
@@ -47,27 +47,28 @@ final class PosterViewController: UIViewController {
         return button
     }()
     
-    // MARK: - Properties
-    
-    private var presenter: PosterPresenterProtocol!
-    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
         setupLayout()
-        setupGestures()
         presenter.viewDidLoad()
     }
 }
 
-// MARK: - Internal Methods
+// MARK: - PosterViewControllerProtocol
 
-extension PosterViewController {
-    func inject(presenter: PosterPresenterProtocol) {
-        self.presenter = presenter
+extension PosterViewController: PosterViewControllerProtocol {
+    func render(_ state: PosterViewState) {
+        imageView.kf.setImage(with: state.poster)
     }
+}
+
+// MARK: - UIScrollViewDelegate
+
+extension PosterViewController: UIScrollViewDelegate {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? { imageView }
 }
 
 // MARK: - Private Methods
@@ -75,12 +76,13 @@ extension PosterViewController {
 private extension PosterViewController {
     func setupView() {
         view.backgroundColor = .white
-        view.addSubviews(
+        view.addSubviews([
             scrollView,
             closeButton
-        )
+        ])
         
         scrollView.addSubview(imageView)
+        setupGestures()
     }
     
     func setupLayout() {
@@ -117,26 +119,14 @@ private extension PosterViewController {
         presenter.didTapClose()
     }
     
-    enum Zoom {
-        static let minimumZoom = 1.0
-        static let maximumZoom = 4.0
+    enum Constant {
+        enum Zoom {
+            static let minimumZoom = 1.0
+            static let maximumZoom = 4.0
+        }
+        
+        enum Icon {
+            static let closeIcon = "xmark"
+        }
     }
-    
-    enum Constants {
-        static let closeIcon = "xmark"
-    }
-}
-
-// MARK: - PosterViewControllerProtocol
-
-extension PosterViewController: PosterViewControllerProtocol {
-    func render(_ state: PosterViewState) {
-        imageView.kf.setImage(with: state.poster)
-    }
-}
-
-// MARK: - UIScrollViewDelegate
-
-extension PosterViewController: UIScrollViewDelegate {
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? { imageView }
 }

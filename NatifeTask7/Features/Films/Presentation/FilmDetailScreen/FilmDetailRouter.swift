@@ -13,8 +13,19 @@ protocol FilmDetailRouterProtocol: AnyObject {
 }
 
 final class FilmDetailRouter {
-    weak var viewController: UIViewController?
+    
+    // MARK: - Properties
+    
+    private weak var viewController: UIViewController?
+    
+    // MARK: - Initialization
+    
+    init(viewController: UIViewController) {
+        self.viewController = viewController
+    }
 }
+
+// MARK: - FilmDetailRouterProtocol
 
 extension FilmDetailRouter: FilmDetailRouterProtocol {
     func openTrailer(_ key: String) {

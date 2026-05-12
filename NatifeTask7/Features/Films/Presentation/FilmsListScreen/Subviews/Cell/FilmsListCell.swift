@@ -92,7 +92,7 @@ final class FilmsListCell: UICollectionViewCell {
 // MARK: - Internal Methods
 
 extension FilmsListCell {
-    func render(with viewState: FilmsListItemViewState) {
+    func render(with viewState: FilmsListViewState.Item) {
         layer.shadowOpacity = 0.4
         imageView.kf.setImage(with: viewState.poster)
         titleLabel.text = viewState.title
@@ -105,21 +105,21 @@ extension FilmsListCell {
 
 private extension FilmsListCell {
     func setupView() {
-        contentView.addSubviews(
+        contentView.addSubviews([
             imageView,
             titleLabel,
             bottomStackView
-        )
+        ])
         
         contentView.clipsToBounds = true
         
         setupShadow()
         
-        bottomStackView.addArrangedSubiviews(
+        bottomStackView.addArrangedSubviews([
             genresLabel,
             spacerView,
             ratingLabel
-        )
+        ])
         
         titleLabel.addShadow()
         genresLabel.addShadow()

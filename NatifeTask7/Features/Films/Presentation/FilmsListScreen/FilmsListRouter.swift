@@ -15,13 +15,17 @@ final class FilmsListRouter {
     
     // MARK: - Properties
     
-    weak var viewController: UIViewController?
-    private let container: any DIContainerProtocol
+    private weak var viewController: UIViewController?
+    private let filmDetailFactory: (Int, String) -> UIViewController
     
     // MARK: - Initialization
     
-    init(container: any DIContainerProtocol) {
-        self.container = container
+    init(
+        viewController: UIViewController,
+        filmDetailFactory: @escaping (Int, String) -> UIViewController
+    ) {
+        self.viewController = viewController
+        self.filmDetailFactory = filmDetailFactory
     }
 }
 
@@ -29,7 +33,7 @@ final class FilmsListRouter {
 
 extension FilmsListRouter: FilmsListRouterProtocol {
     func openFilmDetail(_ filmId: Int, title: String) {
-        let filmDetailViewController = FilmDetailAssembly.build(container: container, filmId: filmId, title: title)
+        let filmDetailViewController = filmDetailFactory(filmId, title)
         self.viewController?.navigationController?.pushViewController(filmDetailViewController, animated: true)
     }
 }

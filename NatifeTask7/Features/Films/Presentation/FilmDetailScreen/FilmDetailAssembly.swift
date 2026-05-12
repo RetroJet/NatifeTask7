@@ -9,19 +9,17 @@ import UIKit
 
 final class FilmDetailAssembly {
     static func build(container: DIContainerProtocol, filmId: Int, title: String) -> UIViewController {
-        let router = FilmDetailRouter()
         let viewController = FilmDetailViewController()
         let viewStateFactory = FilmDetailViewStateFactory()
+        let router = FilmDetailRouter(viewController: viewController)
         let presenter = FilmDetailPresenter(
             filmId: filmId,
             title: title,
-            viewController: viewController,
-            dataRepository: container.getDataRepository(),
+            dataRepository: container.getFilmsDataRepository(),
             viewStateFactory: viewStateFactory,
+            viewController: viewController,
             router: router
         )
-        
-        router.viewController = viewController
         viewController.inject(presenter: presenter)
         
         return viewController

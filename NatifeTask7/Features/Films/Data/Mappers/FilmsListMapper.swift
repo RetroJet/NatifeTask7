@@ -14,8 +14,8 @@ struct FilmsListMapper {
         )
     }
     
-    nonisolated static func toDomain(_ dto: FilmsListDTO) -> FilmsListInfo {
-        FilmsListInfo(
+    nonisolated static func toDomain(_ dto: FilmsListResponse.FilmsListDTO) -> FilmsPage.FilmsListInfo {
+        FilmsPage.FilmsListInfo(
             id: dto.id,
             poster: dto.posterPath,
             title: dto.title,

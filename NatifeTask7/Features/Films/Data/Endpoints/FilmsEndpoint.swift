@@ -13,7 +13,8 @@ enum FilmsEndpoint: Endpoint {
     
     var path: String {
         switch self {
-        case .popular: return API.popularFilms
+        case .popular:
+            return Constant.API.popularFilms
         }
     }
     
@@ -31,7 +32,9 @@ enum FilmsEndpoint: Endpoint {
 }
 
 private extension FilmsEndpoint {
-    enum API {
-        static let popularFilms = "/movie/popular"
+    enum Constant {
+        enum API {
+            static let popularFilms = "/movie/popular"
+        }
     }
 }
