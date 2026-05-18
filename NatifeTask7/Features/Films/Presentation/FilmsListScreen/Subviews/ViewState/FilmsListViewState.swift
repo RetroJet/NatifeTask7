@@ -7,6 +7,11 @@
 
 import Foundation
 
+nonisolated enum FilmsListItem: Hashable {
+    case skeleton(UUID)
+    case films(FilmsListViewState.Item)
+}
+
 nonisolated struct FilmsListViewState {
     enum Kind {
         case loading
@@ -20,7 +25,6 @@ nonisolated struct FilmsListViewState {
         let title: String
         let genre: String
         let rating: String
-        let date: String
     }
     
     let kind: Kind

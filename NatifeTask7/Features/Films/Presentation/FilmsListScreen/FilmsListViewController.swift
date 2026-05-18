@@ -44,6 +44,7 @@ final class FilmsListViewController: BaseViewController<FilmsListPresenterProtoc
         let layout = createListLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(cell: FilmsListCell.self)
+        collectionView.register(cell: FilmsListSkeletonCell.self)
         collectionView.showsVerticalScrollIndicator = false
         collectionView.refreshControl = refreshControl
         collectionView.clipsToBounds = false
@@ -51,13 +52,20 @@ final class FilmsListViewController: BaseViewController<FilmsListPresenterProtoc
         return collectionView
     }()
     
-    private lazy var diffableDataSource: UICollectionViewDiffableDataSource<Int, FilmsListViewState.Item> = {
-        let dataSource = UICollectionViewDiffableDataSource<Int, FilmsListViewState.Item>(
+    private lazy var diffableDataSource: UICollectionViewDiffableDataSource<Int, FilmsListItem> = {
+        let dataSource = UICollectionViewDiffableDataSource<Int, FilmsListItem>(
             collectionView: collectionView
         ) { collectionView, indexPath, item in
-            let cell: FilmsListCell = collectionView.dequeue(for: indexPath)
-            cell.render(with: item)
-            return cell
+            switch item {
+            case .skeleton:
+                let cell: FilmsListSkeletonCell = collectionView.dequeue(for: indexPath)
+                cell.startShimmer()
+                return cell
+            case .films(let filmsItem):
+                let cell: FilmsListCell = collectionView.dequeue(for: indexPath)
+                cell.render(with: filmsItem)
+                return cell
+            }
         }
         return dataSource
     }()
@@ -77,10 +85,6 @@ final class FilmsListViewController: BaseViewController<FilmsListPresenterProtoc
         label.isHidden = true
         return label
     }()
-    
-    // MARK: - Properties
-    
-    lazy var activityIndicator = makeActivityIndicator()
     
     // MARK: - Lifecycle
     
@@ -104,13 +108,11 @@ extension FilmsListViewController: FilmsListViewControllerProtocol {
     func render(_ state: FilmsListViewState) {
         switch state.kind {
         case .loading:
-            activityIndicator.startAnimating()
+            applySkeletonSnapshot()
         case .content(let content):
-            activityIndicator.stopAnimating()
             applySnapshot(with: content, animated: state.animated)
             emptyLabel.isHidden = !content.isEmpty
         case .error(let message):
-            activityIndicator.stopAnimating()
             showError(message)
         }
     }
@@ -131,8 +133,9 @@ extension FilmsListViewController: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        presenter.didSelectFilm(item.id)
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath),
+              case .films(let filmItem) = item else { return }
+        presenter.didSelectFilm(filmItem.id)
     }
 }
 
@@ -148,10 +151,6 @@ extension FilmsListViewController: UISearchBarDelegate {
     }
 }
 
-// MARK: - ActivityIndicatableProtocol
-
-extension FilmsListViewController: ActivityIndicatableProtocol {}
-
 // MARK: - Private Methods
 
 private extension FilmsListViewController {
@@ -164,7 +163,6 @@ private extension FilmsListViewController {
             emptyLabel
         ])
         
-        setupActivityIndicator()
         setupNavigationBar()
     }
     
@@ -227,10 +225,17 @@ private extension FilmsListViewController {
     }
     
     func applySnapshot(with items: [FilmsListViewState.Item], animated: Bool) {
-        var snapshot = NSDiffableDataSourceSnapshot<Int, FilmsListViewState.Item>()
+        var snapshot = NSDiffableDataSourceSnapshot<Int, FilmsListItem>()
         snapshot.appendSections([0])
-        snapshot.appendItems(items)
+        snapshot.appendItems(items.map { .films($0) })
         diffableDataSource.apply(snapshot, animatingDifferences: animated)
+    }
+    
+    func applySkeletonSnapshot() {
+        var snapshot = NSDiffableDataSourceSnapshot<Int, FilmsListItem>()
+        snapshot.appendSections([0])
+        snapshot.appendItems((0..<3).map { _ in .skeleton(UUID()) })
+        diffableDataSource.apply(snapshot, animatingDifferences: false)
     }
     
     func makeSortMenu() -> UIMenu {
