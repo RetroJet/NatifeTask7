@@ -7,11 +7,11 @@
 
 import Network
 
-protocol NetworkMonitorProtocol {
+protocol NetworkMonitorProtocol: Actor {
     var isConnected: Bool { get }
 }
 
-final class NetworkMonitor: NetworkMonitorProtocol {
+actor NetworkMonitor: NetworkMonitorProtocol {
     
     // MARK: - Properties
     
@@ -22,8 +22,12 @@ final class NetworkMonitor: NetworkMonitorProtocol {
     
     init() {
         monitor.pathUpdateHandler = { [weak self] path in
-            self?.isConnected = path.status == .satisfied
+            Task { await self?.update(path.status == .satisfied) }
         }
         monitor.start(queue: .global())
+    }
+    
+    private func update(_ connected: Bool) {
+        isConnected = connected
     }
 }

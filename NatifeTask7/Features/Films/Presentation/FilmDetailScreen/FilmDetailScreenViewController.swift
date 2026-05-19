@@ -125,6 +125,7 @@ extension FilmDetailViewController: FilmDetailViewControllerProtocol {
             activityIndicator.stopAnimating()
             renderContent(content)
         case .error(let message):
+            activityIndicator.stopAnimating()
             showError(message)
         }
     }

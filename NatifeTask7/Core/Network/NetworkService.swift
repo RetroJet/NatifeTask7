@@ -37,7 +37,7 @@ nonisolated final class NetworkService: NetworkServiceProtocol {
     }
     
     func request<T: Decodable>(from endpoint: any Endpoint) async throws -> T {
-        guard networkMonitor.isConnected else {
+        guard await networkMonitor.isConnected else {
             throw NetworkError.noInternet
         }
         

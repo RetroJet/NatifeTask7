@@ -38,6 +38,7 @@ final class FilmsListPresenter {
     private var allFilms: [FilmsPage.FilmsListInfo] = []
     private var isLoading = false
     private var genres: [GenresInfo] = []
+    private var loadTask: Task<Void, Never>?
     private var searchTask: Task<Void, Never>?
     private var currentQuery = Constant.Search.currentQuery
     private(set) var currentSort: SortOption = .all
@@ -66,7 +67,8 @@ final class FilmsListPresenter {
 
 extension FilmsListPresenter: FilmsListPresenterProtocol {
     func viewDidLoad() {
-        Task { await loadInitial() }
+        loadTask?.cancel()
+        loadTask = Task { await loadInitial() }
     }
     
     func didScrollNearEnd() {
@@ -74,7 +76,8 @@ extension FilmsListPresenter: FilmsListPresenterProtocol {
     }
     
     func didPullToRefresh() async {
-        await loadInitial(showLoader: false)
+        loadTask?.cancel()
+        loadTask = Task { await loadInitial(showLoader: false) }
     }
     
     func didChangeSearchText(_ text: String) {
@@ -119,6 +122,7 @@ private extension FilmsListPresenter {
             
             await render()
         } catch {
+            guard !Task.isCancelled else { return }
             await handle(error)
         }
     }
@@ -138,6 +142,7 @@ private extension FilmsListPresenter {
             currentPage = nextPage
             await render(animated: false)
         } catch {
+            guard !Task.isCancelled else { return }
             await handle(error)
         }
     }
@@ -155,8 +160,10 @@ private extension FilmsListPresenter {
     
     func handle(_ error: Error) async {
         await MainActor.run {
-            print("\(Constant.ErrorText.fetchFilms)\(error)")
-            viewController?.render(FilmsListViewState(kind: .error(error.localizedDescription), animated: false))
+            print("\(Constant.ErrorText.fetchFilms): \(error)")
+            if case NetworkError.noInternet = error {
+                viewController?.render(FilmsListViewState(kind: .error(error.localizedDescription), animated: false))
+            }
         }
     }
     

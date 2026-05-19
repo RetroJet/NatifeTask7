@@ -50,6 +50,7 @@ final class FilmDetailPresenter {
 
 extension FilmDetailPresenter: FilmDetailPresenterProtocol {
     func viewDidLoad() {
+        viewController?.render(FilmDetailViewState(title: initialTitle, kind: .loading))
         Task { await loadDetail() }
     }
     
@@ -71,11 +72,10 @@ private extension FilmDetailPresenter {
     }
     
     func loadDetail() async {
-        await MainActor.run { viewController?.render(FilmDetailViewState(title: initialTitle, kind: .loading)) }
         do {
             async let detail = dataRepository.fetchFilm(by: filmId)
             async let trailer = dataRepository.fetchTrailer(by: filmId)
-        
+            
             let resolvedTrailer = try await trailer
             trailerKey = resolvedTrailer?.key
             let state = makeState(film: try await detail, trailer: resolvedTrailer)
@@ -86,9 +86,18 @@ private extension FilmDetailPresenter {
             }
             
         } catch {
-            await MainActor.run {
-                viewController?.render(FilmDetailViewState(title: initialTitle, kind: .error(error.localizedDescription)))
+            print("\(Constant.ErrorText.fetchFilm): \(error)")
+            if case NetworkError.noInternet = error {
+                await MainActor.run {
+                    viewController?.render(FilmDetailViewState(title: initialTitle, kind: .error(error.localizedDescription)))
+                }
             }
+        }
+    }
+    
+    enum Constant {
+        enum ErrorText {
+            static let fetchFilm = "Failed to fetch films"
         }
     }
 }

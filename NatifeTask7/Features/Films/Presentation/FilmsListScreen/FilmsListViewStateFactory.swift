@@ -23,7 +23,7 @@ struct FilmsListViewStateFactory: FilmsListViewStateFactoryProtocol {
         let items = input.films.map { film in
             let poster = film.poster.flatMap { URL(string: Constant.Image.posterBaseURL + $0) }
             let rating = String(format: "%.1f", film.rating)
-            let title = film.title + ", " + String(film.date.prefix(4))
+            let title = film.date.isEmpty ? film.title : film.title + ", " + String(film.date.prefix(4))
             let genre = film.genreIds
                 .compactMap { genreMap[$0] }
                 .prefix(3)
@@ -34,8 +34,7 @@ struct FilmsListViewStateFactory: FilmsListViewStateFactoryProtocol {
                 poster: poster,
                 title: title,
                 genre: genre,
-                rating: rating,
-                date: film.date
+                rating: rating
             )
         }
         
