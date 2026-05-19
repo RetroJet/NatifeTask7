@@ -68,17 +68,16 @@ final class FilmsListCell: UICollectionViewCell {
         super.layoutSubviews()
         
         let shadowRect = CGRect(
-            x: 0,
+            x: Constant.Shadow.inset,
             y: bounds.height - 8,
-            width: bounds.width,
-            height: 10
+            width: bounds.width - Constant.Shadow.inset * 2,
+            height: 14
         )
         layer.shadowPath = UIBezierPath(roundedRect: shadowRect, cornerRadius: 5).cgPath
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        layer.shadowOpacity = 0
         imageView.kf.cancelDownloadTask()
         imageView.image = nil
     }
@@ -93,7 +92,6 @@ final class FilmsListCell: UICollectionViewCell {
 
 extension FilmsListCell {
     func render(with viewState: FilmsListViewState.Item) {
-        layer.shadowOpacity = 0.4
         imageView.kf.setImage(with: viewState.poster)
         titleLabel.text = viewState.title
         genresLabel.text = viewState.genre
@@ -113,7 +111,12 @@ private extension FilmsListCell {
         
         contentView.clipsToBounds = true
         
-        setupShadow()
+        addShadow(
+            shadowColor: UIColor.black.cgColor,
+            shadowOpacity: 0.7,
+            shadowOffset: .zero,
+            shadowRadius: 8
+        )
         
         bottomStackView.addArrangedSubviews([
             genresLabel,
@@ -121,16 +124,17 @@ private extension FilmsListCell {
             ratingLabel
         ])
         
-        titleLabel.addShadow()
-        genresLabel.addShadow()
-        ratingLabel.addShadow()
-    }
-    
-    func setupShadow() {
-        layer.shadowColor = UIColor.black.cgColor
-        layer.shadowOpacity = 0
-        layer.shadowOffset = CGSize(width: 0, height: 4)
-        layer.shadowRadius = 6
+        [
+            titleLabel,
+            genresLabel,
+            ratingLabel
+        ].forEach { $0.addShadow(
+            shadowColor: UIColor.black.cgColor,
+            shadowOpacity: 1,
+            shadowOffset: CGSize(width: 0, height: 2),
+            shadowRadius: 4
+        )
+        }
     }
     
     func setupLayout() {
@@ -150,13 +154,10 @@ private extension FilmsListCell {
             make.trailing.equalTo(-10)
         }
     }
-}
-
-private extension UILabel {
-    func addShadow() {
-        layer.shadowColor = UIColor.black.cgColor
-        layer.shadowOpacity = 1
-        layer.shadowOffset = CGSize(width: 0, height: 1)
-        layer.shadowRadius = 3
+    
+    enum Constant {
+        enum Shadow {
+            static let inset: CGFloat = 4
+        }
     }
 }
